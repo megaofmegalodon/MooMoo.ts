@@ -1,6 +1,5 @@
 import { players } from "../../constants/Player";
 import Client from "../../core/Client";
-import Menu from "../../core/mod/menu/Menu";
 import { Input, isOnWindow } from "../../ui/Hook";
 import RendererSystem, { mainContext } from "../RendererSystem";
 
@@ -20,7 +19,7 @@ export default function renderPlayers(delta: number, layer: number) {
                 mainContext.save();
                 mainContext.translate(player.x - xOffset, player.y - yOffset);
 
-                mainContext.rotate((player.sid === Client.mySID && !Menu.getStatus("renderRealDirection") ? Input.getMouseDirection() : player.dir) + player.dirPlus);
+                mainContext.rotate((player.sid === Client.mySID ? Input.getAttackDir() : player.dir) + player.dirPlus);
                 player.render(mainContext);
                 mainContext.restore();
             }
