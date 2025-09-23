@@ -1,0 +1,32 @@
+{
+    "name": "moomoo.ts",
+    "version": "1.0.0",
+    "description": "moomoo.io's frontend code written in TypeScript",
+    "homepage": "https://github.com/megaofmegalodon/MooMoo.ts#readme",
+    "bugs": {
+        "url": "https://github.com/megaofmegalodon/MooMoo.ts/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/megaofmegalodon/MooMoo.ts.git"
+    },
+    "license": "MIT",
+    "author": "megaofmegalodon",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "build": "node build.mjs"
+    },
+    "dependencies": {
+        "esbuild": "^0.25.10",
+        "msgpack-lite": "^0.1.26",
+        "path": "^0.12.7",
+        "ts-loader": "^9.5.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/msgpack-lite": "^0.1.11"
+    }
+}
