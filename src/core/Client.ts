@@ -358,7 +358,7 @@ export default class Client {
 
             RendererSystem.deathTextScale = 0;
 
-            setTimeout(function () {
+            setTimeout(() => {
                 menuCardHolder.style.display = "block";
                 mainMenu.style.display = "block";
                 diedText.style.display = "none";
@@ -451,9 +451,6 @@ export default class Client {
                 player.forcePos = !player.visible;
                 player.visible = false;
             }
-
-            let smallestDistance = Infinity;
-            const myPlayer = Client.player;
 
             for (let i = 0; i < data.length; i += 13) {
                 const player = players.sidMap.get(data[i] as number);

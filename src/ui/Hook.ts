@@ -65,6 +65,7 @@ function sendMoveDir() {
     const moveDir = getMoveDir();
 
     Client.lastMoveDir = moveDir;
+    Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.MOVE, Client.lastMoveDir);
 }
 
 document.addEventListener("contextmenu", (event) => event.preventDefault());

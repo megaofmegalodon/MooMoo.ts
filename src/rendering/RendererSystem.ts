@@ -287,10 +287,9 @@ export default class RendererSystem {
 
     private static renderPlayerChats(delta: number) {
         const [xOffset, yOffset] = this.getOffset();
+        const baseY = -115;
 
         for (const player of players.sidMap.values()) {
-            const baseY = -115;
-
             if (player.visible) {
                 mainContext.save();
 
