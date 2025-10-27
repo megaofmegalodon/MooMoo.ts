@@ -459,9 +459,6 @@ export default class Client {
                     player.x1 = player.x;
                     player.y1 = player.y;
 
-                    player.lastX = player.x2;
-                    player.lastY = player.y2;
-
                     player.x2 = data[i + 1] as number;
                     player.y2 = data[i + 2] as number;
 

@@ -145,12 +145,6 @@ export default class Player {
 
     dir: number = 0;
 
-    lastX: number = 0;
-    lastY: number = 0;
-
-    velX: number = 0;
-    velY: number = 0;
-
     dirPlus: number = 0;
     animSpeed: number = 0;
     animTime: number = 0;
@@ -320,13 +314,6 @@ export default class Player {
         }
 
         this.reloads[53] = Math.max(0, this.reloads[53] - delta);
-    }
-
-    getNextPosition() {
-        return {
-            x: this.velX,
-            y: this.velY
-        };
     }
 
     getRealPosition() {
