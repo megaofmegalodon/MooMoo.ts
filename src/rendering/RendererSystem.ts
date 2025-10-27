@@ -154,8 +154,6 @@ export default class RendererSystem {
         const delta = now - this.lastUpdate;
         this.lastUpdate = now;
 
-        const [xOffset, yOffset] = this.getOffset();
-
         const player = Client.player;
 
         if (player) {
@@ -203,6 +201,8 @@ export default class RendererSystem {
                 entity.dir = lerpAngle(entity.d1, entity.d2, t);
             }
         }
+
+        const [xOffset, yOffset] = this.getOffset();
 
         renderBackground(mainContext);
 
