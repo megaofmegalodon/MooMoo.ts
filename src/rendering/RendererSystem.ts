@@ -187,7 +187,9 @@ export default class RendererSystem {
             this.camY = ScriptConfig.MAP_SIZE / 2;
         }
 
-        for (const entity of [...players.sidMap.values(), ...ais.values()]) {
+        for (const entity of [...players.entities, ...ais.entities]) {
+            if (!entity) continue;
+
             if (entity.forcePos) {
                 entity.x = entity.x2;
                 entity.y = entity.y2;
@@ -231,9 +233,8 @@ export default class RendererSystem {
         renderPlayers(delta, 0);
 
         mainContext.globalAlpha = 1;
-        for (const ai of ais.values()) {
-
-            if (ai.active && ai.visible) {
+        for (const ai of ais.entities) {
+            if (ai && ai.active && ai.visible) {
                 ai.animate(delta);
 
                 mainContext.save();
@@ -289,8 +290,8 @@ export default class RendererSystem {
         const [xOffset, yOffset] = this.getOffset();
         const baseY = -115;
 
-        for (const player of players.sidMap.values()) {
-            if (player.visible) {
+        for (const player of players.entities) {
+            if (player && player.visible) {
                 mainContext.save();
 
                 mainContext.translate(player.x - xOffset, player.y - yOffset);
@@ -319,8 +320,8 @@ export default class RendererSystem {
 
         mainContext.strokeStyle = RendererUtils.darkOutlineColor;
 
-        for (const entity of [...players.sidMap.values(), ...ais.values()]) {
-            if (entity.visible) {
+        for (const entity of [...players.entities, ...ais.entities]) {
+            if (entity && entity.visible) {
                 const teamName = (entity as Player).team;
                 const tmpName = `${teamName ? `[${teamName}] ` : ""}${entity.name || ""}`;
 

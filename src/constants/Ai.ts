@@ -1,7 +1,8 @@
 import RendererUtils from "../rendering/RendererUtils";
 import randInt from "../utils/randInt";
+import EntityManager from "./EntityManager";
 
-export const ais: Map<number, Ai> = new Map();
+export const ais = new EntityManager<Ai>();
 
 export const aiTypes = [{
     id: 0,

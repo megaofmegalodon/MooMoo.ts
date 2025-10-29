@@ -127,8 +127,8 @@ window.onfocus = () => {
     inWindow = true;
 
     if (Client.player) {
-        for (const player of players.sidMap.values()) {
-            player.resetReloads();
+        for (const player of players.entities) {
+            if (player) player.resetReloads();
         }
     }
 };

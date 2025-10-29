@@ -1,7 +1,6 @@
 import Ai, { ais, aiTypes } from "../constants/Ai";
 import items from "../constants/items";
 import Player, { ChatMessage, players } from "../constants/Player";
-import { STORE_HAT_ID, STORE_HAT_MAP } from "../constants/store";
 import RendererSystem, { diedText } from "../rendering/RendererSystem";
 import RendererUtils from "../rendering/RendererUtils";
 import { AllianceDataType, AllianceNotifi, Point } from "../types";
@@ -10,8 +9,6 @@ import Loader from "../ui/Loader";
 import generateStoreList, { storeMenu } from "../ui/utils/generateStoreList";
 import updateClanMenu from "../ui/utils/updateClanMenu";
 import updateNotifications from "../ui/utils/updateNotifications";
-import getDir from "../utils/getDir";
-import getDist from "../utils/getDist";
 import getElem from "../utils/getElem";
 import kFormat from "../utils/kFormat";
 import ScriptConfig from "../utils/ScriptConfig";
@@ -211,7 +208,7 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.ADD_PLAYER, (data, isYou) => {
-            let tmpPlayer = players.idMap.get(data[0]);
+            let tmpPlayer = players.get(data[0]);
 
             if (!tmpPlayer) {
                 tmpPlayer = new Player(data[0], data[1]);
@@ -266,13 +263,13 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.REMOVE_PLAYER, (id) => {
-            const player = players.idMap.get(id);
+            const player = players.get(id);
 
             if (player) Player.removePlayer(player);
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.UPDATE_HEALTH, (sid, health) => {
-            const player = players.sidMap.get(sid);
+            const player = players.get(sid);
 
             if (player) {
                 const delta = health - player.health;
@@ -297,7 +294,8 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.LOAD_AI, (data) => {
-            for (const ai of ais.values()) {
+            for (const ai of ais.entities) {
+                if (!ai) continue;
                 ai.forcePos = !ai.visible;
                 ai.visible = false;
             }
@@ -331,7 +329,7 @@ export default class Client {
                     ai.sid = data[i];
                     ai.visible = true;
 
-                    ais.set(data[i], ai);
+                    ais.add(data[i], data[i + 1].toString(), ai);
                 }
             }
         });
@@ -366,7 +364,7 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.RECEIVE_CHAT, (sid, msg) => {
-            const player = players.sidMap.get(sid);
+            const player = players.get(sid);
 
             if (player) {
                 player.chatMessages.unshift(new ChatMessage(msg));
@@ -376,7 +374,7 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.GATHER_ANIMATION, (sid, didHit, index) => {
-            const player = players.sidMap.get(sid);
+            const player = players.get(sid);
 
             if (player) {
                 player.updateWeaponData(index, undefined, true);
@@ -447,13 +445,14 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.UPDATE_PLAYERS, (data) => {
-            for (const player of players.idMap.values()) {
+            for (const player of players.entities) {
+                if (!player) continue;
                 player.forcePos = !player.visible;
                 player.visible = false;
             }
 
             for (let i = 0; i < data.length; i += 13) {
-                const player = players.sidMap.get(data[i] as number);
+                const player = players.get(data[i] as number);
 
                 if (player) {
                     player.x1 = player.x;

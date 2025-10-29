@@ -3,14 +3,12 @@ import RendererUtils from "../rendering/RendererUtils";
 import { renderProjectile } from "../rendering/utils/renderProjectiles";
 import lerp from "../utils/lerp";
 import ScriptConfig from "../utils/ScriptConfig";
+import EntityManager from "./EntityManager";
 import GameObject from "./GameObject";
 import items, { Weapon } from "./items";
-import store, { STORE_ACCESSORY_ID, STORE_HAT_ID } from "./store";
+import store from "./store";
 
-export const players = {
-    sidMap: new Map<number, Player>(),
-    idMap: new Map<string, Player>()
-};
+export const players = new EntityManager<Player>();
 
 export type PlayerInitType = [id: string, sid: number, name: string, x: number, y: number, dir: number, health: number, maxHealth: number, scale: number, skinColor: number];
 
@@ -447,13 +445,8 @@ export default class Player {
     static addPlayer(player: Player) {
         let done = false;
 
-        if (!players.idMap.has(player.id)) {
-            players.idMap.set(player.id, player);
-            done = true;
-        }
-
-        if (!players.sidMap.has(player.sid)) {
-            players.sidMap.set(player.sid, player);
+        if (!players.has(player.sid)) {
+            players.add(player.sid, player.id, player);
             done = true;
         }
 
@@ -467,7 +460,6 @@ export default class Player {
      */
 
     static removePlayer(player: Player) {
-        players.idMap.delete(player.id);
-        players.sidMap.delete(player.sid);
+        players.remove(player.sid, player.id);
     }
 }

@@ -1,16 +1,15 @@
+import EntityManager from "../../constants/EntityManager";
 import GameObject from "../../constants/GameObject";
-import { STORE_HAT_MAP } from "../../constants/store";
 import RendererUtils from "../../rendering/RendererUtils";
 import getDist from "../../utils/getDist";
 import ScriptConfig from "../../utils/ScriptConfig";
-import Client from "../Client";
 
 /**
  * The constant that holds all of the GameObjects.
  * This should never be loop through or used unless for rendering.
  */
 
-export const gameObjects: Map<number, GameObject> = new Map();
+export const gameObjects = new EntityManager<GameObject>();
 
 export default class ObjectManager {
     private static gridMap: Map<string, GameObject[]> = new Map();
@@ -20,7 +19,7 @@ export default class ObjectManager {
         const gameObject = new GameObject(x, y, dir, scale, type, id, owner);
         if (setSID) gameObject.sid = sid;
 
-        gameObjects.set(sid, gameObject);
+        gameObjects.add(sid, "no", gameObject);
 
         const key = this.getKey(x, y);
         if (!this.gridMap.has(key)) this.gridMap.set(key, []);
@@ -89,7 +88,9 @@ export default class ObjectManager {
      */
 
     static checkItem(x: number, y: number, scale: number, id: number, ignoreId?: number) {
-        for (const gameObject of gameObjects.values()) {
+        for (const gameObject of gameObjects.entities) {
+            if (!gameObject) continue;
+
             const blockS = gameObject.blocker ? gameObject.blocker : gameObject.getScale(1, gameObject.isItem);
 
             if (typeof ignoreId === "number" && gameObject.sid === ignoreId) continue;
@@ -109,21 +110,21 @@ export default class ObjectManager {
     static remove(sid: number) {
         const gameObject = gameObjects.get(sid);
         this.removeObjectFromChunks(gameObject);
-        gameObjects.delete(sid);
+        gameObjects.remove(sid, "no");
     }
 
     static removeAll(ownerSID: number) {
         const toRemove = [];
 
-        for (const obj of gameObjects.values()) {
-            if (obj.ownerSID === ownerSID) {
+        for (const obj of gameObjects.entities) {
+            if (obj && obj.ownerSID === ownerSID) {
                 this.removeObjectFromChunks(obj);
                 toRemove.push(obj.sid);
             }
         }
 
         for (const sid of toRemove) {
-            gameObjects.delete(sid);
+            gameObjects.remove(sid, "no");
         }
     }
 }

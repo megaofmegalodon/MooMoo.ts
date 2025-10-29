@@ -8,8 +8,8 @@ export default function renderPlayers(delta: number, layer: number) {
 
     mainContext.globalAlpha = 1;
 
-    for (const player of players.sidMap.values()) {
-        if (player.zIndex == layer) {
+    for (const player of players.entities) {
+        if (player && player.zIndex == layer) {
             player.animate(delta);
             if (isOnWindow()) player.update(delta);
 
