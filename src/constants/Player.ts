@@ -446,7 +446,7 @@ export default class Player {
         let done = false;
 
         if (!players.has(player.sid)) {
-            players.add(player.sid, player.id, player);
+            players.add(player);
             done = true;
         }
 
@@ -460,6 +460,6 @@ export default class Player {
      */
 
     static removePlayer(player: Player) {
-        players.remove(player.sid, player.id);
+        players.remove(player);
     }
 }

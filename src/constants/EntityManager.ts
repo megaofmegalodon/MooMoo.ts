@@ -1,64 +1,67 @@
-export default class EntityManager<T> {
-    entities: (T | undefined)[] = [];
-    private recentlyRemoved: number[] = [];
+interface Entity {
+    id: string | number;
+    sid: number;
+}
 
-    /**
-     * Maps out entities to their indexes.
-     */
+export default class EntityManager<T extends Entity> {
+    entities: T[] = [];
 
-    private entitiesMap: Map<number | string, number> = new Map();
+    private id: number = 0;
+    private link: Map<number | string, number> = new Map();
+    private freeIndices: number[] = [];
 
-    add(sid: number, id: string, item: T) {
-        if (this.entitiesMap.has(sid)) return;
-        if (this.entitiesMap.has(id)) return;
+    private numberOfEntries = 0;
 
-        const recent = this.recentlyRemoved.shift();
+    add(entity: T) {
+        if (this.link.has(entity.sid) || (typeof entity.id === "string" && this.link.has(entity.id))) return;
+        const id = this.freeIndices.length ? this.freeIndices.pop()! : this.id++;
 
-        this.entitiesMap.set(sid, recent ?? this.entities.length);
-        if (id !== "no") this.entitiesMap.set(id, recent ?? this.entities.length);
-
-        if (typeof recent === "number") {
-            this.entities[recent] = item;
-        } else this.entities.push(item);
+        this.numberOfEntries++;
+        this.entities[id] = entity;
+        this.link.set(entity.sid, id);
+        if (typeof entity.id === "string") this.link.set(entity.id, id); // only allow string ids for lookup
     }
 
-    has(id: number | string) {
-        const index = this.entitiesMap.get(id);
+    remove(entity: T) {
+        const id = this.link.get(entity.sid);
+        const lastIndex = this.entities.length - 1;
 
-        if (typeof index !== "number")
-            return false;
+        if (typeof id !== "number") return;
 
-        const entity = this.entities[index];
+        if (id !== lastIndex) {
+            const lastEntity = this.entities[lastIndex]!;
+            this.entities[id] = lastEntity;
 
-        if (!entity)
-            return false;
+            this.link.set(lastEntity.sid, id);
+            if (typeof lastEntity.id === "string") this.link.set(lastEntity.id, id);
+        }
 
-        return true;
+        this.numberOfEntries--;
+        this.entities.pop();
+        this.freeIndices.push(lastIndex);
+        this.link.delete(entity.sid);
+        if (typeof entity.id === "string") this.link.delete(entity.id);
     }
 
-    get(id: number | string): T | undefined {
-        const index = this.entitiesMap.get(id);
-        if (typeof index !== "number") return undefined;
-
-        const entity = this.entities[index];
-        if (!entity) return undefined;
-
-        return entity;
+    get(identifier: string | number) {
+        const id = this.link.get(identifier);
+        if (typeof id !== "number") return;
+        return this.entities[id];
     }
 
-    remove(sid: number, id: string) {
-        const index = this.entitiesMap.get(sid);
+    size() {
+        return this.numberOfEntries;
+    }
 
-        if (typeof index !== "number") return;
-
-        this.entities[index] = undefined;
-        this.recentlyRemoved.push(index);
-        this.entitiesMap.delete(sid);
-        if (id !== "no") this.entitiesMap.delete(id);
+    has(identifier: string | number) {
+        return this.link.has(identifier);
     }
 
     clear() {
         this.entities.length = 0;
-        this.entitiesMap.clear();
+        this.freeIndices.length = 0;
+        this.link.clear();
+        this.id = 0;
+        this.numberOfEntries = 0;
     }
 }

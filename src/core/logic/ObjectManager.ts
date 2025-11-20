@@ -19,7 +19,7 @@ export default class ObjectManager {
         const gameObject = new GameObject(x, y, dir, scale, type, id, owner);
         if (setSID) gameObject.sid = sid;
 
-        gameObjects.add(sid, "no", gameObject);
+        gameObjects.add(gameObject);
 
         const key = this.getKey(x, y);
         if (!this.gridMap.has(key)) this.gridMap.set(key, []);
@@ -110,21 +110,15 @@ export default class ObjectManager {
     static remove(sid: number) {
         const gameObject = gameObjects.get(sid);
         this.removeObjectFromChunks(gameObject);
-        gameObjects.remove(sid, "no");
+        if (gameObject) gameObjects.remove(gameObject);
     }
 
     static removeAll(ownerSID: number) {
-        const toRemove = [];
-
         for (const obj of gameObjects.entities) {
             if (obj && obj.ownerSID === ownerSID) {
                 this.removeObjectFromChunks(obj);
-                toRemove.push(obj.sid);
+                gameObjects.remove(obj);
             }
-        }
-
-        for (const sid of toRemove) {
-            gameObjects.remove(sid, "no");
         }
     }
 }
