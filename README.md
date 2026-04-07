@@ -46,3 +46,29 @@ npx tsc
 
 4. Source Directory
 Replace the current source directory with the transpiled JS.
+
+# Usage
+After installing the source files, you can work on the client in any code editor.
+To run your code live on MooMoo.io, use a Tampermonkey script to dynamically load your local build.
+
+1. Tampermonkey Loader
+```js
+// ==UserScript==
+// @name         New Userscript
+// @namespace    http://tampermonkey.net/
+// @version      2026-04-07
+// @description  try to take over the world!
+// @author       You
+// @match        *://*.moomoo.io/*
+// @require      file:///C:/Users/YourName/Desktop/MooMoo.ts/dist/bundle.js
+// @grant        none
+// ==/UserScript==
+
+console.log("Mythical Mod Loaded");
+```
+> Note: Make sure that the file URL directly links to the `bundle.js` on your local computer.
+
+2. Enable Local File Access
+For the @require command to work, you must enable this setting in your browser.
+    1. Go to Tampermonkey Settings
+    2. Enable "Allow access to file URLs" 
