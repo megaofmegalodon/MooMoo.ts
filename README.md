@@ -9,7 +9,7 @@ some features (e.g. mobile support, lockDir/aim locking, etc) are currently miss
 # Getting Started
 
 ## For TypeScript developers
-If you prefer working with types and modern syntax:
+If you prefer working with types and modern syntax.
 1. Clone the repo
 ```bash
 git clone https://github.com/megaofmegalodon/MooMoo.ts.git
@@ -26,7 +26,7 @@ npm run build
 ```
 
 ## For JavaScript developers
-Because TypeScript's compiles down to JavaScript,
+Because TypeScript "compiles" down to JavaScript,
 developers who are not familar with TypeScript can easily transpile this repo into a JS codebase.
 
 1. Clone the repo
