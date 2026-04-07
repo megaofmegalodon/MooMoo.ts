@@ -60,7 +60,7 @@ To run your code live on MooMoo.io, use a Tampermonkey script to dynamically loa
 // @description  try to take over the world!
 // @author       You
 // @match        *://*.moomoo.io/*
-// @require      file:///C:/Users/YourName/Desktop/MooMoo.ts/dist/bundle.js
+// @require      file:///Users/YourName/Downloads/MooMoo.ts/dist/bundle.js
 // @grant        none
 // ==/UserScript==
 
