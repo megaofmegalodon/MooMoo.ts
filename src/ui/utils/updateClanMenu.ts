@@ -26,7 +26,7 @@ export default function updateClanMenu() {
             for (let i = 0; i < Client.alliancePlayers.length; i += 2) {
                 const allianceItem = document.createElement("div");
                 allianceItem.className = "allianceItem";
-                allianceItem.style = `color: ${Client.alliancePlayers[i] == Client.mySID ? "#fff" : "rgba(255,255,255,0.6)"};`;
+                allianceItem.style.color = Client.alliancePlayers[i] == Client.mySID ? "#fff" : "rgba(255,255,255,0.6)";
                 allianceItem.innerText = `${Client.alliancePlayers[i + 1]}`;
                 allianceHolder.appendChild(allianceItem);
 
@@ -43,7 +43,7 @@ export default function updateClanMenu() {
                 for (const team of Client.alliances) {
                     const allianceItem = document.createElement("div");
                     allianceItem.className = "allianceItem";
-                    allianceItem.style = `color: ${team.sid == Client.player.team ? "#fff" : "rgba(255,255,255,0.6)"};`;
+                    allianceItem.style.color = team.sid == Client.player.team ? "#fff" : "rgba(255,255,255,0.6)";
                     allianceItem.innerText = `${team.sid}`;
                     allianceHolder.appendChild(allianceItem);
 
