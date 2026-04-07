@@ -44,7 +44,7 @@ npm install
 npx tsc
 ```
 
-4. Source Directory
+4. Source Directory<br>
 Replace the current source directory with the transpiled JS.
 
 # Usage
