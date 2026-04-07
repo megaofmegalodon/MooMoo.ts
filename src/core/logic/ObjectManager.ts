@@ -88,7 +88,7 @@ export default class ObjectManager {
      */
 
     static checkItem(x: number, y: number, scale: number, id: number, ignoreId?: number) {
-        for (const gameObject of gameObjects.entities) {
+        for (const gameObject of gameObjects.all) {
             if (!gameObject) continue;
 
             const blockS = gameObject.blocker ? gameObject.blocker : gameObject.getScale(1, gameObject.isItem);
@@ -110,14 +110,16 @@ export default class ObjectManager {
     static remove(sid: number) {
         const gameObject = gameObjects.get(sid);
         this.removeObjectFromChunks(gameObject);
-        if (gameObject) gameObjects.remove(gameObject);
+        if (gameObject) gameObjects.remove(gameObject.sid);
     }
 
     static removeAll(ownerSID: number) {
-        for (const obj of gameObjects.entities) {
+        for (let i = gameObjects.all.length - 1; i >= 0; i--) {
+            const obj = gameObjects.all[i];
+
             if (obj && obj.ownerSID === ownerSID) {
                 this.removeObjectFromChunks(obj);
-                gameObjects.remove(obj);
+                gameObjects.remove(obj.sid);
             }
         }
     }

@@ -215,6 +215,8 @@ export const aiTypes = [{
 }];
 
 export default class Ai {
+    id = "";
+    listHandlerIndex = -1;
     health: number;
     maxHealth: number;
 

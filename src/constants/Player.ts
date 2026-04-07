@@ -3,12 +3,13 @@ import RendererUtils from "../rendering/RendererUtils";
 import { renderProjectile } from "../rendering/utils/renderProjectiles";
 import lerp from "../utils/lerp";
 import ScriptConfig from "../utils/ScriptConfig";
-import EntityManager from "./EntityManager";
+import { Entity } from "./EntityManager";
 import GameObject from "./GameObject";
 import items, { Weapon } from "./items";
+import PlayerEntityHandler from "./PlayerEntityHandler";
 import store from "./store";
 
-export const players = new EntityManager<Player>();
+export const players = new PlayerEntityHandler();
 
 export type PlayerInitType = [id: string, sid: number, name: string, x: number, y: number, dir: number, health: number, maxHealth: number, scale: number, skinColor: number];
 
@@ -92,7 +93,8 @@ interface PlayerWeaponData {
     knock: number;
 }
 
-export default class Player {
+export default class Player implements Entity {
+    listHandlerIndex = -1;
     trap: GameObject | undefined;
     name: string = "unknown";
 
@@ -445,7 +447,7 @@ export default class Player {
     static addPlayer(player: Player) {
         let done = false;
 
-        if (!players.has(player.sid)) {
+        if (!players.playersSidMap.has(player.sid)) {
             players.add(player);
             done = true;
         }
@@ -460,6 +462,6 @@ export default class Player {
      */
 
     static removePlayer(player: Player) {
-        players.remove(player);
+        players.remove(player.sid);
     }
 }

@@ -187,7 +187,7 @@ export default class RendererSystem {
             this.camY = ScriptConfig.MAP_SIZE / 2;
         }
 
-        for (const entity of [...players.entities, ...ais.entities]) {
+        for (const entity of [...players.all, ...ais.all]) {
             if (!entity) continue;
 
             if (entity.forcePos) {
@@ -233,7 +233,7 @@ export default class RendererSystem {
         renderPlayers(delta, 0);
 
         mainContext.globalAlpha = 1;
-        for (const ai of ais.entities) {
+        for (const ai of ais.all) {
             if (ai && ai.active && ai.visible) {
                 ai.animate(delta);
 
@@ -290,7 +290,7 @@ export default class RendererSystem {
         const [xOffset, yOffset] = this.getOffset();
         const baseY = -115;
 
-        for (const player of players.entities) {
+        for (const player of players.all) {
             if (player && player.visible) {
                 mainContext.save();
 
@@ -320,7 +320,7 @@ export default class RendererSystem {
 
         mainContext.strokeStyle = RendererUtils.darkOutlineColor;
 
-        for (const entity of [...players.entities, ...ais.entities]) {
+        for (const entity of [...players.all, ...ais.all]) {
             if (entity && entity.visible) {
                 const teamName = (entity as Player).team;
                 const tmpName = `${teamName ? `[${teamName}] ` : ""}${entity.name || ""}`;

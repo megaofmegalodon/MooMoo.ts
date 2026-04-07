@@ -71,7 +71,7 @@ export default class Socket extends WebSocket {
 
     sendMsg<K extends keyof ClientToServerPacketMap>(type: K, ...data: ClientToServerPacketMap[K]) {
         if (this.readyState === WebSocket.OPEN && PacketManager.manage(type, data)) {
-            this.send(encode([type, data]));
+            this.send(encode([type, data]) as any);
 
             if (type !== PacketMap.CLIENT_TO_SERVER.PING_SOCKET) {
                 Client.packets++;

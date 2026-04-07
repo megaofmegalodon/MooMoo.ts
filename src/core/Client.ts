@@ -294,7 +294,7 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.LOAD_AI, (data) => {
-            for (const ai of ais.entities) {
+            for (const ai of ais.all) {
                 if (!ai) continue;
                 ai.forcePos = !ai.visible;
                 ai.visible = false;
@@ -329,7 +329,7 @@ export default class Client {
                     ai.sid = data[i];
                     ai.visible = true;
 
-                    ais.add(data[i], data[i + 1].toString(), ai);
+                    ais.add(ai);
                 }
             }
         });
@@ -445,7 +445,7 @@ export default class Client {
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.UPDATE_PLAYERS, (data) => {
-            for (const player of players.entities) {
+            for (const player of players.all) {
                 if (!player) continue;
                 player.forcePos = !player.visible;
                 player.visible = false;

@@ -2,6 +2,7 @@ import items from "./items";
 
 export default class GameObject {
 
+    listHandlerIndex: number = -1;
     sid: number = -1;
 
     name: string;

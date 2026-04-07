@@ -127,7 +127,7 @@ window.onfocus = () => {
     inWindow = true;
 
     if (Client.player) {
-        for (const player of players.entities) {
+        for (const player of players.all) {
             if (player) player.resetReloads();
         }
     }

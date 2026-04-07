@@ -55,7 +55,7 @@ drawVolcanoImages();
 export default function renderGameObjects(delta: number, layer: number) {
     const [xOffset, yOffset] = RendererSystem.getOffset();
 
-    for (const gameObject of gameObjects.entities) {
+    for (const gameObject of gameObjects.all) {
         if (gameObject && gameObject.active) {
             const tmpX = gameObject.x + gameObject.xWiggle - xOffset;
             const tmpY = gameObject.y + gameObject.yWiggle - yOffset;

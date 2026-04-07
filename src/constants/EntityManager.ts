@@ -1,67 +1,40 @@
-interface Entity {
+export interface Entity {
     id: string | number;
     sid: number;
+    listHandlerIndex: number;
 }
 
-export default class EntityManager<T extends Entity> {
-    entities: T[] = [];
-
-    private id: number = 0;
-    private link: Map<number | string, number> = new Map();
-    private freeIndices: number[] = [];
-
-    private numberOfEntries = 0;
+export default class EntityHandler<T extends Entity> {
+    private entitiesMap: Map<number, T> = new Map();
+    private entitiesList: T[] = [];
 
     add(entity: T) {
-        if (this.link.has(entity.sid) || (typeof entity.id === "string" && this.link.has(entity.id))) return;
-        const id = this.freeIndices.length ? this.freeIndices.pop()! : this.id++;
-
-        this.numberOfEntries++;
-        this.entities[id] = entity;
-        this.link.set(entity.sid, id);
-        if (typeof entity.id === "string") this.link.set(entity.id, id); // only allow string ids for lookup
+        entity.listHandlerIndex = this.entitiesList.length;
+        this.entitiesMap.set(entity.sid, entity);
+        this.entitiesList.push(entity);
     }
 
-    remove(entity: T) {
-        const id = this.link.get(entity.sid);
-        const lastIndex = this.entities.length - 1;
-
-        if (typeof id !== "number") return;
-
-        if (id !== lastIndex) {
-            const lastEntity = this.entities[lastIndex]!;
-            this.entities[id] = lastEntity;
-
-            this.link.set(lastEntity.sid, id);
-            if (typeof lastEntity.id === "string") this.link.set(lastEntity.id, id);
-        }
-
-        this.numberOfEntries--;
-        this.entities.pop();
-        this.freeIndices.push(lastIndex);
-        this.link.delete(entity.sid);
-        if (typeof entity.id === "string") this.link.delete(entity.id);
+    get(sid: number) {
+        return this.entitiesMap.get(sid);
     }
 
-    get(identifier: string | number) {
-        const id = this.link.get(identifier);
-        if (typeof id !== "number") return;
-        return this.entities[id];
+    has(sid: number) {
+        return this.entitiesMap.has(sid);
     }
 
-    size() {
-        return this.numberOfEntries;
+    remove(sid: number) {
+        const entity = this.get(sid);
+        if (!entity) return;
+
+        this.entitiesMap.delete(sid);
+
+        const index = entity.listHandlerIndex;
+        const lastEntity = this.entitiesList[this.entitiesList.length - 1];
+
+        this.entitiesList[index] = lastEntity;
+        lastEntity.listHandlerIndex = index;
+        this.entitiesList.pop();
     }
 
-    has(identifier: string | number) {
-        return this.link.has(identifier);
-    }
-
-    clear() {
-        this.entities.length = 0;
-        this.freeIndices.length = 0;
-        this.link.clear();
-        this.id = 0;
-        this.numberOfEntries = 0;
-    }
+    get all() { return this.entitiesList };
 }
