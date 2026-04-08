@@ -68,7 +68,7 @@ console.log("Mythical Mod Loaded");
 ```
 > Note: Make sure that the file URL directly links to the `bundle.js` on your local computer.
 
-2. Enable Local File Access
+2. Enable Local File Access<br>
 For the @require command to work, you must enable this setting in your browser.
     1. Go to Tampermonkey Settings
     2. Enable "Allow access to file URLs" 
