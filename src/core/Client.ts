@@ -56,8 +56,6 @@ export default class Client {
     static alliances: AllianceDataType[] = [];
     static allianceNotifications: AllianceNotifi[] = [];
 
-    static packets = 0;
-
     static weaponIndex = 0;
     static buildingsHit: GameObject[] = [];
 

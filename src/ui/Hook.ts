@@ -189,7 +189,7 @@ export default function Hook() {
 
         Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.JOIN_GAME, {
             name,
-            moofoll: 1,
+            moofoll: "1",
             skin: Loader.skinColor
         });
     };

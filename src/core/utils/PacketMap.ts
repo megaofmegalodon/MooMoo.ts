@@ -3,38 +3,34 @@ import { AllianceDataType } from "../../types";
 
 const PacketMap = {
     CLIENT_TO_SERVER: {
-        SELECT_TO_BUILD: "z",
-        AUTO_GATHER: "K",
+        JOIN_GAME: "M",
+        SEND_AIM: "D",
         MOVE: "9",
         RESET_MOVEMENT_DIR: "e",
-        JOIN_CLAN: "b",
+        SEND_HIT: "F",
+        SELECT_TO_BUILD: "z",
+        SEND_UPGRADE: "H",
+        AUTO_GATHER: "K",
         CREATE_CLAN: "L",
         LEAVE_CLAN: "N",
-        JOIN_GAME: "M",
-        PING_SOCKET: "0",
+        JOIN_CLAN: "b",
         JOIN_REQUEST: "P",
         KICK_FROM_CLAN: "Q",
+        STORE: "c",
         SEND_CHAT: "6",
-        SEND_HIT: "F",
-        SEND_AIM: "D",
-        SEND_UPGRADE: "H",
         PING_MAP: "S",
-        STORE: "c"
+        PING_SOCKET: "0"
     },
+
     SERVER_TO_CLIENT: {
+        IO_INIT: "io-init",
+        SET_INIT_DATA: "A",
+        DISCONNECT: "B",
         SET_UP_GAME: "C",
         ADD_PLAYER: "D",
         REMOVE_PLAYER: "E",
         UPDATE_PLAYERS: "a",
         UPDATE_LEADERBOARD: "G",
-        UPDATE_ITEMS: "V",
-        PING_RESPONSE: "0",
-        UPDATE_AGE: "T",
-        KILL_PLAYER: "P",
-        UPDATE_UPGRADES: "U",
-        RECEIVE_CHAT: "6",
-        SET_PLAYER_TEAM: "3",
-        SET_INIT_DATA: "A",
         LOAD_GAME_OBJECT: "H",
         LOAD_AI: "I",
         ANIMATE_AI: "J",
@@ -43,28 +39,51 @@ const PacketMap = {
         SHOOT_TURRET: "M",
         UPDATE_PLAYER_VALUE: "N",
         UPDATE_HEALTH: "O",
+        KILL_PLAYER: "P",
         KILL_OBJECT: "Q",
         KILL_OBJECTS: "R",
         UPDATE_ITEM_COUNTS: "S",
+        UPDATE_AGE: "T",
+        UPDATE_UPGRADES: "U",
+        UPDATE_ITEMS: "V",
         ADD_PROJECTILE: "X",
         REMOVE_PROJECTILE: "Y",
+        SERVER_RESTARTING: "Z",
         ADD_ALLIANCE: "g",
         DELETE_ALLIANCE: "1",
         ALLIANCE_NOTIFICATION: "2",
+        SET_PLAYER_TEAM: "3",
         SET_ALLIANCE_PLAYERS: "4",
         UPDATE_STORE_ITEMS: "5",
+        RECEIVE_CHAT: "6",
         UPDATE_MINIMAP: "7",
         SHOW_TEXT: "8",
-        PING_MAP: "9"
+        PING_MAP: "9",
+        PING_RESPONSE: "0"
     }
 } as const;
 
-export interface ClientToServerPacketMap {
+export const clientToServerArr: string[] = [];
+export const serverToClientArr: string[] = [];
+
+for (const key in PacketMap.CLIENT_TO_SERVER) {
+    clientToServerArr.push(PacketMap.CLIENT_TO_SERVER[key as keyof typeof PacketMap.CLIENT_TO_SERVER]);
+}
+
+for (const key in PacketMap.SERVER_TO_CLIENT) {
+    const val = PacketMap.SERVER_TO_CLIENT[key as keyof typeof PacketMap.SERVER_TO_CLIENT];
+
+    if (val !== "io-init") {
+        serverToClientArr.push(val);
+    }
+}
+
+export interface MOOMOO_CLIENT_TO_SERVER_MAP {
     "z": [id: number, isWeapon: boolean];
     "K": [id: 1];
     "e": [];
     "6": [msg: string];
-    "M": [data: { name: string, moofoll: number, skin: number }];
+    "M": [data: { name: string, moofoll: string, skin: number }];
     "9": [angle: number | null];
     "0": [];
     "S": [];
@@ -79,7 +98,8 @@ export interface ClientToServerPacketMap {
     "c": [buy: boolean, id: number, index: boolean];
 };
 
-export interface ServerToClientPacketMap {
+export interface MOOMOO_SERVER_TO_CLIENT_MAP {
+    "io-init": [id: string, seed: number, salt: string, idk: number];
     "A": [data: { teams: AllianceDataType[] }];
     "C": [yourSID: number];
     "D": [
@@ -118,6 +138,7 @@ export interface ServerToClientPacketMap {
     "U": [points: number, age: number];
     "X": [x: number, y: number, dir: number, range: number, speed: number, indx: number, layer: number, sid: number];
     "Y": [sid: number, range: number];
+    "7": [data: number[]];
 }
 
 export default PacketMap;

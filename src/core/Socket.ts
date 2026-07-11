@@ -1,12 +1,12 @@
 import { decode, encode } from "msgpack-lite";
 import getElem from "../utils/getElem";
-import PacketMap, { ClientToServerPacketMap, ServerToClientPacketMap } from "./utils/PacketMap";
+import PacketMap, { MOOMOO_CLIENT_TO_SERVER_MAP, MOOMOO_SERVER_TO_CLIENT_MAP } from "./utils/PacketMap";
 import { enterGameButton } from "../ui/Hook";
 import Client, { gameUI, mainMenu } from "./Client";
 import PacketManager from "./utils/PacketManager";
 
-type EventKey = keyof ServerToClientPacketMap;
-type EventCallback<K extends EventKey> = (...args: ServerToClientPacketMap[K]) => void;
+type EventKey = keyof MOOMOO_SERVER_TO_CLIENT_MAP;
+type EventCallback<K extends EventKey> = (...args: MOOMOO_SERVER_TO_CLIENT_MAP[K]) => void;
 
 const menuCardHolder = getElem<"div">("menuCardHolder");
 const loadingText = getElem<"div">("loadingText");
@@ -15,6 +15,8 @@ export default class Socket extends WebSocket {
     private handlers: {
         [K in EventKey]?: EventCallback<K>[]
     } = {};
+
+    private manager = new PacketManager();
 
     constructor(url: string) {
         super(url);
@@ -35,8 +37,19 @@ export default class Socket extends WebSocket {
 
     private onMessage(event: MessageEvent) {
         const parsed = decode(new Uint8Array(event.data));
-        const type = parsed[0] as keyof ServerToClientPacketMap;
 
+        if (parsed[0] === "io-init") {
+            const [id, seed, salt] = parsed[1] as MOOMOO_SERVER_TO_CLIENT_MAP["io-init"];
+            this.manager.init(id, seed, salt);
+            return;
+        }
+
+        if (this.manager.tables && typeof parsed[0] === "number") {
+            parsed[0] = this.manager.tables.s2c.decrypt[parsed[0]];
+            if (parsed[0] === undefined) return;
+        }
+
+        const type = parsed[0] as keyof MOOMOO_SERVER_TO_CLIENT_MAP;
         this.dispatch(type, parsed[1]);
     }
 
@@ -55,29 +68,34 @@ export default class Socket extends WebSocket {
         }
     }
 
-    private dispatch<K extends keyof ServerToClientPacketMap>(
+    private dispatch<K extends keyof MOOMOO_SERVER_TO_CLIENT_MAP>(
         type: K,
         data: unknown
     ) {
         const handlers = this.handlers[type];
         if (!handlers) return;
 
-        const typedData = data as ServerToClientPacketMap[K];
+        const typedData = data as MOOMOO_SERVER_TO_CLIENT_MAP[K];
         handlers.forEach(callback => {
             callback(...typedData);
         });
     }
 
+    async sendMsg<K extends keyof MOOMOO_CLIENT_TO_SERVER_MAP>(type: K, ...data: MOOMOO_CLIENT_TO_SERVER_MAP[K]) {
+        if (this.readyState !== WebSocket.OPEN) return;
 
-    sendMsg<K extends keyof ClientToServerPacketMap>(type: K, ...data: ClientToServerPacketMap[K]) {
-        if (this.readyState === WebSocket.OPEN && PacketManager.manage(type, data)) {
-            this.send(encode([type, data]) as any);
+        const encryptPacketId = this.manager.tables?.c2s.encrypt[type];
+        if (encryptPacketId === undefined) return;
 
-            if (type !== PacketMap.CLIENT_TO_SERVER.PING_SOCKET) {
-                Client.packets++;
-                setTimeout(() => Client.packets--, 1e3);
-            }
-        }
+        const currentSequence = ++this.manager.sequence;
+        const packetData = encode([encryptPacketId, data, currentSequence]);
+        const binary = new Uint8Array(PacketManager.PACKET_PADDING + packetData.length);
+        const signature = (await this.manager.getPacketSignature(packetData as any))!;
+
+        binary.set(signature, 0);
+        binary.set(packetData, PacketManager.PACKET_PADDING);
+
+        this.send(binary);
     }
 
     on<K extends EventKey>(event: K, callback: EventCallback<K>) {
