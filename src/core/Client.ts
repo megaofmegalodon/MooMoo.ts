@@ -22,6 +22,7 @@ import TokenGenerator from "./TokenGenerator";
 import PacketMap from "./utils/PacketMap";
 import updateStatusDisplay from "./utils/updateStatusDisplay";
 import GameObject from "../constants/GameObject";
+import CaptchaManager from "./CaptchaManager";
 
 export const mainMenu = getElem<"div">("mainMenu");
 const loadingText = getElem<"div">("loadingText");
@@ -67,12 +68,8 @@ export default class Client {
         } else {
             const token = await TokenGenerator.default();
             this.wsAddress = `wss://${Loader.currentServer.key}.${Loader.currentServer.region}.moomoo.io/?token=`;
-            const url = `${this.wsAddress}${token}`;
-
-            this.socket = new Socket(url);
+            CaptchaManager.renderChallenge(`${this.wsAddress}${token}`);
         }
-
-        this.hookEvents();
     }
 
     private static lastPingSocket = Date.now();

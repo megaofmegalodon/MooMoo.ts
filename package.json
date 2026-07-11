@@ -26,6 +26,7 @@
         "typescript": "^5.8.3"
     },
     "devDependencies": {
+        "@types/cloudflare-turnstile": "^0.2.2",
         "@types/express": "^5.0.3",
         "@types/msgpack-lite": "^0.1.11"
     }
