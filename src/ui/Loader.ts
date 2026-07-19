@@ -47,7 +47,7 @@ function updateSkinColorPicker() {
 }
 
 export default class Loader {
-    static PRIVATE_SERVER: boolean = true;
+    static PRIVATE_SERVER: boolean = false;
 
     private static toolSprites: Record<string, HTMLImageElement> = {};
     static currentServer: MooMooServer;
@@ -68,7 +68,7 @@ export default class Loader {
     private static async findServers() {
         if (this.PRIVATE_SERVER) return;
 
-        const response = await fetch(`https://${location.href.includes("sandbox") ? "api-sandbox" : "api"}.moomoo.io/servers?v=1.26`);
+        const response = await fetch(`https://${location.href.includes("sandbox") ? "api-sandbox" : "api"}.moomoo.io/servers?v=1.27`);
         const data = (await response.json()) as MooMooServer[];
 
         const serverBrowserInput = document.createElement("select");

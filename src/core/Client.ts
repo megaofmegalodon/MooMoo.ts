@@ -66,9 +66,8 @@ export default class Client {
         if (Loader.PRIVATE_SERVER) {
             this.socket = new Socket("ws://localhost:1234");
         } else {
-            const token = await TokenGenerator.default();
-            this.wsAddress = `wss://${Loader.currentServer.key}.${Loader.currentServer.region}.moomoo.io/?token=`;
-            CaptchaManager.renderChallenge(`${this.wsAddress}${token}`);
+            this.wsAddress = `wss://${Loader.currentServer.key}.${Loader.currentServer.region}.moomoo.io/`;
+            CaptchaManager.renderChallenge(`${this.wsAddress}`);
         }
     }
 
