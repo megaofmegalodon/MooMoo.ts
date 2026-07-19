@@ -1,4 +1,3 @@
-import getElem from "../utils/getElem";
 import Client from "./Client";
 import Socket from "./Socket";
 
