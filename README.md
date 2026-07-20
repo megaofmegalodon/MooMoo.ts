@@ -98,7 +98,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(cloudflareScript);
 });
 ```
-> Note: Make sure that the file URL directly links to the `bundle.js` on your local computer.
 
 2. Start Local Private Server<br>
 Simply open terminal and type out ``npx http-server ./dist --cors`` in the terminal.
