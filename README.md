@@ -47,6 +47,10 @@ npx tsc
 4. Source Directory<br>
 Replace the current source directory with the transpiled JS.
 
+5. Update Bundler<br>
+Ensure that the esbuild points to the correct source file.
+> Just change "src/index.ts" to "src/index.js"
+
 # Usage
 After installing the source files, you can work on the client in any code editor.
 To run your code live on MooMoo.io, use a Tampermonkey script to dynamically load your local build.
@@ -56,19 +60,45 @@ To run your code live on MooMoo.io, use a Tampermonkey script to dynamically loa
 // ==UserScript==
 // @name         New Userscript
 // @namespace    http://tampermonkey.net/
-// @version      2026-04-07
+// @version      2026-07-19
 // @description  try to take over the world!
 // @author       You
 // @match        *://*.moomoo.io/*
-// @require      file:///Users/YourName/Downloads/MooMoo.ts/dist/bundle.js
+// @run-at       document-start
+// @connect      localhost
 // @grant        none
 // ==/UserScript==
 
-console.log("Mythical Mod Loaded");
+// because MooMoo.ts is a typescript port of MooMoo.io's local
+// client side code, it expects that it is the only "client" that runs.
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+            if (node.tagName === "SCRIPT" && node.src.includes("index-")) {
+                node.remove();
+            }
+        });
+    });
+});
+
+observer.observe(document.documentElement, { childList: true, subtree: true });
+
+window.addEventListener("DOMContentLoaded", () => {
+    const cloudflareScript = document.createElement("script");
+    cloudflareScript.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    cloudflareScript.async = true;
+    cloudflareScript.onload = () => {
+        const modScript = document.createElement("script");
+        modScript.src = "http://localhost:8080/bundle.js";
+        document.head.appendChild(modScript);
+
+        console.log("Mythical Mod Loaded");
+    }
+
+    document.head.appendChild(cloudflareScript);
+});
 ```
 > Note: Make sure that the file URL directly links to the `bundle.js` on your local computer.
 
-2. Enable Local File Access<br>
-For the @require command to work, you must enable this setting in your browser.
-    1. Go to Tampermonkey Settings
-    2. Enable "Allow access to file URLs" 
+2. Start Local Private Server<br>
+Simply open terminal and type out ``npx http-server ./dist --cors`` in the terminal.
