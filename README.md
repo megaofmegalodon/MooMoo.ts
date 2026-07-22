@@ -3,8 +3,7 @@
 A modern, TypeScript-based implementation of MooMoo.io's frontend.
 This repo provides a clean and type-safe alternative for modding.
 The perfect boilerplate for developers looking to build their own clients for the game.
-> Note: Although all the core features have already been ported to TypeScript,
-some features (e.g. mobile support, lockDir/aim locking, etc) are currently missing.
+> Note: MooMoo.ts does not support mobile clients.
 
 # Getting Started
 
