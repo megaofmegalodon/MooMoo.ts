@@ -18,7 +18,6 @@ import ObjectManager from "./logic/ObjectManager";
 import ProjectileManager from "./logic/ProjectileManager";
 import TextManager from "./logic/TextManager";
 import Socket from "./Socket";
-import TokenGenerator from "./TokenGenerator";
 import PacketMap from "./utils/PacketMap";
 import updateStatusDisplay from "./utils/updateStatusDisplay";
 import GameObject from "../constants/GameObject";
