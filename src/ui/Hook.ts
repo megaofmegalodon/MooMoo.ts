@@ -45,6 +45,7 @@ export class Input {
 
     private static mouseX: number = 0;
     private static mouseY: number = 0;
+    static aimLock = false;
 
     static init() {
         gameCanvas.addEventListener("mousemove", (event) => {
@@ -53,8 +54,11 @@ export class Input {
         });
     }
 
+    private static lastAimDir = 0;
+
     static getAttackDir() {
-        const mouseDir = Math.atan2(this.mouseY - (window.innerHeight / 2), this.mouseX - (window.innerWidth / 2));
+        if (Input.aimLock) return this.lastAimDir;
+        const mouseDir = this.lastAimDir = Math.atan2(this.mouseY - (window.innerHeight / 2), this.mouseX - (window.innerWidth / 2));
         return mouseDir;
     }
 }
@@ -150,7 +154,9 @@ document.addEventListener("keydown", (event) => {
         if (moveKeys[event.keyCode]) {
             sendMoveDir();
         } else {
-            if (event.code === "KeyE") {
+            if (event.code === "KeyX") {
+                Input.aimLock = !Input.aimLock;
+            } else if (event.code === "KeyE") {
                 Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.AUTO_GATHER, 1);
             } else if (/Digit[0-9]/.test(event.code)) {
                 const player = Client.player;
