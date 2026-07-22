@@ -64,6 +64,7 @@ export default class Client {
     static async connect() {
         if (Loader.PRIVATE_SERVER) {
             this.socket = new Socket("ws://localhost:1234");
+            this.hookEvents();
         } else {
             mainMenu.style.display = "block";
             loadingText.style.display = "none";

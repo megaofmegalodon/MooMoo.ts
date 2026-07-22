@@ -17,11 +17,13 @@ export default class Socket extends WebSocket {
     } = {};
 
     private manager = new PacketManager();
+    private isLocalServer = false;
 
     constructor(url: string) {
         super(url);
 
         this.binaryType = "arraybuffer";
+        this.isLocalServer = url.includes("localhost");
 
         this.onopen = () => this.onOpen();
         this.onmessage = (event) => this.onMessage(event);
@@ -37,6 +39,12 @@ export default class Socket extends WebSocket {
 
     private onMessage(event: MessageEvent) {
         const parsed = decode(new Uint8Array(event.data));
+
+        if (this.isLocalServer) {
+            const type = parsed[0] as keyof MOOMOO_SERVER_TO_CLIENT_MAP;
+            this.dispatch(type, parsed[1]);
+            return;
+        }
 
         if (parsed[0] === "io-init") {
             const [id, seed, salt] = parsed[1] as MOOMOO_SERVER_TO_CLIENT_MAP["io-init"];
@@ -83,6 +91,11 @@ export default class Socket extends WebSocket {
 
     async sendMsg<K extends keyof MOOMOO_CLIENT_TO_SERVER_MAP>(type: K, ...data: MOOMOO_CLIENT_TO_SERVER_MAP[K]) {
         if (this.readyState !== WebSocket.OPEN) return;
+
+        if (this.isLocalServer) {
+            this.send(new Uint8Array(encode([type, data])));
+            return;
+        }
 
         const encryptPacketId = this.manager.tables?.c2s.encrypt[type];
         if (encryptPacketId === undefined) return;
