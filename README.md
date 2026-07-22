@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
     cloudflareScript.async = true;
     cloudflareScript.onload = () => {
         const modScript = document.createElement("script");
-        modScript.src = "http://localhost:8080/bundle.js";
+        modScript.src = `http://localhost:8080/bundle.js?t=${Date.now()}`;
         document.head.appendChild(modScript);
 
         console.log("Mythical Mod Loaded");
