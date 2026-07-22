@@ -1,13 +1,15 @@
 import * as esbuild from "esbuild";
 
 async function main() {
-    await esbuild.build({
+    const contextOne = await esbuild.context({
         entryPoints: ["src/index.ts"],
         bundle: true,
         outfile: "dist/bundle.js",
     });
 
-    console.log("Bundled source files.");
+    await contextOne.watch();
+
+    console.log("Watching for changes...");
 }
 
 main();

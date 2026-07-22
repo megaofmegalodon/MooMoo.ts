@@ -15,6 +15,7 @@
     "type": "commonjs",
     "main": "index.js",
     "scripts": {
+        "watch": "node watch.mjs",
         "build": "node build.mjs"
     },
     "dependencies": {
