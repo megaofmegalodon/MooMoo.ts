@@ -58,8 +58,8 @@ export class Input {
 
     static getAttackDir() {
         if (Input.aimLock) return this.lastAimDir;
-        const mouseDir = this.lastAimDir = Math.atan2(this.mouseY - (window.innerHeight / 2), this.mouseX - (window.innerWidth / 2));
-        return mouseDir;
+        this.lastAimDir = Math.atan2(this.mouseY - (window.innerHeight / 2), this.mouseX - (window.innerWidth / 2));
+        return this.lastAimDir;
     }
 }
 
@@ -94,8 +94,8 @@ function toggleChat() {
         chatHolder.style.display = "none";
         requestAnimationFrame(() => chatBox.blur());
 
-        if (chatBox.value.length) Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.SEND_CHAT, chatBox.value.slice(0, 30));
-
+        if (chatBox.value.length)
+            Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.SEND_CHAT, chatBox.value.slice(0, 30));
     }
 
     chatBox.value = "";
@@ -147,6 +147,7 @@ document.addEventListener("keydown", (event) => {
     if (event.code === "Enter") {
         toggleChat();
     } else if (isKeyboardActive()) {
+        const player = Client.player;
         Input.keys[event.code] = true;
         Input.keys[event.keyCode] = true;
         Input.keys[event.key] = true;
@@ -154,12 +155,13 @@ document.addEventListener("keydown", (event) => {
         if (moveKeys[event.keyCode]) {
             sendMoveDir();
         } else {
-            if (event.code === "KeyX") {
+            if (event.code === "KeyQ") {
+                Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.SELECT_TO_BUILD, player.items[0], false);
+            } else if (event.code === "KeyX") {
                 Input.aimLock = !Input.aimLock;
             } else if (event.code === "KeyE") {
                 Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.AUTO_GATHER, 1);
             } else if (/Digit[0-9]/.test(event.code)) {
-                const player = Client.player;
                 const id = parseInt(event.code.split("Digit")[1]) - 1;
 
                 if (typeof player.weapons[id] === "number") {
