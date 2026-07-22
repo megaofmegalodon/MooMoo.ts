@@ -66,6 +66,10 @@ export default class Client {
         if (Loader.PRIVATE_SERVER) {
             this.socket = new Socket("ws://localhost:1234");
         } else {
+            mainMenu.style.display = "block";
+            loadingText.style.display = "none";
+            menuCardHolder.style.display = "block";
+
             this.wsAddress = `wss://${Loader.currentServer.key}.${Loader.currentServer.region}.moomoo.io/`;
             CaptchaManager.renderChallenge(`${this.wsAddress}`);
         }
@@ -195,10 +199,7 @@ export default class Client {
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.SET_UP_GAME, (yourSID) => {
             this.mySID = yourSID;
-
             mainMenu.style.display = "none";
-            loadingText.style.display = "none";
-            menuCardHolder.style.display = "block";
         });
 
         this.socket.on(PacketMap.SERVER_TO_CLIENT.ADD_PLAYER, (data, isYou) => {

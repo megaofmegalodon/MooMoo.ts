@@ -8,21 +8,13 @@ export default class CaptchaManager {
 
     static renderChallenge(wsAddress: string) {
         if (typeof turnstile !== "undefined") {
-            const elem = document.createElement("div");
-            elem.style.position = "absoulate";
-            elem.style.top = "20px";
-            elem.style.left = "20px";
-            elem.style.zIndex = "99999999";
-            document.body.appendChild(elem);
-
-            this.widgetId = turnstile.render(elem, {
+            this.widgetId = turnstile.render(document.getElementById("turnstileWidget")!, {
                 sitekey: "0x4AAAAAAAMYHI96GFiJzMmp",
                 theme: "light",
                 "error-callback": (err) => console.error(err),
                 callback: (token: string) => {
                     Client.socket = new Socket(`${wsAddress}?token=cf:${encodeURIComponent(token)}`);
                     Client.hookEvents();
-                    elem.remove();
                 },
                 "expired-callback": (token: string) => console.log("exp: " + token)
             });
