@@ -101,7 +101,13 @@ function toggleChat() {
     chatBox.value = "";
 }
 
-gameCanvas.addEventListener("mousedown", (event) => {
+gameCanvas.addEventListener("mousedown", () => {
+    sendHit(1, Input.getAttackDir());
+    inWindow = true;
+});
+
+gameCanvas.addEventListener("mouseup", () => {
+    sendHit(0, Input.getAttackDir());
     inWindow = true;
 });
 
@@ -141,6 +147,11 @@ function isKeyboardActive() {
     return chatHolder.style.display !== "flex" && allianceMenu.style.display !== "block";
 }
 
+function sendHit(toggle: number, dir = Input.getAttackDir()) {
+    if (!Client.player) return;
+    Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.SEND_HIT, toggle, dir);
+}
+
 document.addEventListener("keydown", (event) => {
     inWindow = true;
 
@@ -159,6 +170,8 @@ document.addEventListener("keydown", (event) => {
                 Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.SELECT_TO_BUILD, player.items[0], false);
             } else if (event.code === "KeyX") {
                 Input.aimLock = !Input.aimLock;
+            } else if (event.code === "Space") {
+                sendHit(1, Input.getAttackDir());
             } else if (event.code === "KeyE") {
                 Client.socket.sendMsg(PacketMap.CLIENT_TO_SERVER.AUTO_GATHER, 1);
             } else if (/Digit[0-9]/.test(event.code)) {
@@ -180,8 +193,12 @@ document.addEventListener("keyup", (event) => {
     Input.keys[event.keyCode] = false;
     Input.keys[event.key] = false;
 
-    if (moveKeys[event.keyCode]) {
-        sendMoveDir();
+    if (isKeyboardActive()) {
+        if (moveKeys[event.keyCode]) {
+            sendMoveDir();
+        } else if (event.code === "Space") {
+            sendHit(0, Input.getAttackDir());
+        }
     }
 });
 
